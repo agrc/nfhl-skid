@@ -44,7 +44,7 @@ jobs:
         run: pytest
 
   deploy-dev:
-    name: Deploy to Cloud Run
+    name: Deploy to Cloud Run (dev)
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/dev'
@@ -71,7 +71,7 @@ jobs:
             --no-allow-unauthenticated
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           mounted-secrets:
-            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets:latest
+            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/secrets/skid-secrets:latest
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
@@ -94,7 +94,7 @@ jobs:
           fi
 
   deploy-prod:
-    name: Deploy to Cloud Run
+    name: Deploy to Cloud Run (prod)
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -121,7 +121,7 @@ jobs:
             --no-allow-unauthenticated
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           mounted-secrets:
-            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets
+            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/secrets/skid-secrets:latest
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
