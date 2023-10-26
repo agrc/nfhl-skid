@@ -211,7 +211,8 @@ def _load_layer(module_logger, tempdir, gis, layer, layer_df):
 def _update_hazard_layer_symbology(gis):
     layer_item = gis.content.get(config.FEMA_LAYERS['S_Fld_Haz_Ar']['itemid'])
     layer_data = layer_item.get_data()
-    json_path = Path(__file__).parent / 'fld_haz_ar_drawingInfo.json'
+    # json_path = Path(__file__).parent / 'fld_haz_ar_drawingInfo.json'
+    json_path = Path('/app/src/nfhl/fld_haz_ar_drawingInfo.json')
     with json_path.open('r', encoding='utf-8') as symbology_file:
         layer_data['layers'][0]['layerDefinition']['drawingInfo'] = json.load(symbology_file)
     result = utils.retry(layer_item.update, item_properties={'text': json.dumps(layer_data)})
