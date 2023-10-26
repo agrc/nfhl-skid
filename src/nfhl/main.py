@@ -37,18 +37,18 @@ def _get_secrets():
         dict: The secrets .json loaded as a dictionary
     """
 
-    secret_folder = Path('/secrets')
+    secret_folder = Path("/secrets")
 
     #: Try to get the secrets from the Cloud Function mount point
     if secret_folder.exists():
-        return json.loads(Path('/secrets/app/secrets.json').read_text(encoding='utf-8'))
+        return json.loads(Path("/secrets/app/secrets.json").read_text(encoding="utf-8"))
 
     #: Otherwise, try to load a local copy for local development
-    secret_folder = Path(__file__).parent / 'secrets'
+    secret_folder = Path(__file__).parent / "secrets"
     if secret_folder.exists():
-        return json.loads((secret_folder / 'secrets.json').read_text(encoding='utf-8'))
+        return json.loads((secret_folder / "secrets.json").read_text(encoding="utf-8"))
 
-    raise FileNotFoundError('Secrets folder not found; secrets not loaded.')
+    raise FileNotFoundError("Secrets folder not found; secrets not loaded.")
 
 
 def _initialize(log_path, sendgrid_api_key):
@@ -64,17 +64,17 @@ def _initialize(log_path, sendgrid_api_key):
 
     skid_logger = logging.getLogger(config.SKID_NAME)
     skid_logger.setLevel(config.LOG_LEVEL)
-    palletjack_logger = logging.getLogger('palletjack')
+    palletjack_logger = logging.getLogger("palletjack")
     palletjack_logger.setLevel(config.LOG_LEVEL)
 
     cli_handler = logging.StreamHandler(sys.stdout)
     cli_handler.setLevel(config.LOG_LEVEL)
     formatter = logging.Formatter(
-        fmt='%(levelname)-7s %(asctime)s %(name)15s:%(lineno)5s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'
+        fmt="%(levelname)-7s %(asctime)s %(name)15s:%(lineno)5s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
     cli_handler.setFormatter(formatter)
 
-    log_handler = logging.FileHandler(log_path, mode='w')
+    log_handler = logging.FileHandler(log_path, mode="w")
     log_handler.setLevel(config.LOG_LEVEL)
     log_handler.setFormatter(formatter)
 
@@ -88,10 +88,10 @@ def _initialize(log_path, sendgrid_api_key):
     #: (all log messages were duplicated if put at beginning)
     logging.captureWarnings(True)
 
-    skid_logger.debug('Creating Supervisor object')
+    skid_logger.debug("Creating Supervisor object")
     skid_supervisor = Supervisor(handle_errors=False)
     sendgrid_settings = config.SENDGRID_SETTINGS
-    sendgrid_settings['api_key'] = sendgrid_api_key
+    sendgrid_settings["api_key"] = sendgrid_api_key
     skid_supervisor.add_message_handler(
         SendGridHandler(
             sendgrid_settings=sendgrid_settings, client_name=config.SKID_NAME, client_version=version.__version__
@@ -121,117 +121,127 @@ def _remove_log_file_handlers(log_name, loggers):
 
 def _hazard_areas(hazard_areas_df):
     #: Calculate label values for symbology
-    one_per_annual_flood_dq = (hazard_areas_df['FLD_ZONE'].isin(['A', 'AE', 'AH', 'AO', 'VE']
-                                                               )) & (hazard_areas_df['ZONE_SUBTY'].isnull())
-    regulatory_floodway_dq = (hazard_areas_df['FLD_ZONE'] == 'AE'
-                             ) & (hazard_areas_df['ZONE_SUBTY'].isin(['FLOODWAY', 'FLOODWAY CONTAINED IN CHANNEL']))
-    undet_flood_hazard_dq = hazard_areas_df['FLD_ZONE'] == 'D'
-    point_oh_two_percent_annual_flood_dq = (hazard_areas_df['FLD_ZONE'] == 'X') & (
-        hazard_areas_df['ZONE_SUBTY'].isin([
-            '0.2 PCT ANNUAL CHANCE FLOOD HAZARD', '1 PCT DEPTH LESS THAN 1 FOOT',
-            '1 PCT DRAINAGE AREA LESS THAN 1 SQUARE MILE'
-        ])
+    one_per_annual_flood_dq = (hazard_areas_df["FLD_ZONE"].isin(["A", "AE", "AH", "AO", "VE"])) & (
+        hazard_areas_df["ZONE_SUBTY"].isnull()
     )
-    reduced_risk_levee_dq = (hazard_areas_df['FLD_ZONE']
-                             == 'X') & (hazard_areas_df['ZONE_SUBTY'] == 'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE')
-    area_not_included_dq = hazard_areas_df['FLD_ZONE'] == 'AREA NOT INCLUDED'
+    regulatory_floodway_dq = (hazard_areas_df["FLD_ZONE"] == "AE") & (
+        hazard_areas_df["ZONE_SUBTY"].isin(["FLOODWAY", "FLOODWAY CONTAINED IN CHANNEL"])
+    )
+    undet_flood_hazard_dq = hazard_areas_df["FLD_ZONE"] == "D"
+    point_oh_two_percent_annual_flood_dq = (hazard_areas_df["FLD_ZONE"] == "X") & (
+        hazard_areas_df["ZONE_SUBTY"].isin(
+            [
+                "0.2 PCT ANNUAL CHANCE FLOOD HAZARD",
+                "1 PCT DEPTH LESS THAN 1 FOOT",
+                "1 PCT DRAINAGE AREA LESS THAN 1 SQUARE MILE",
+            ]
+        )
+    )
+    reduced_risk_levee_dq = (hazard_areas_df["FLD_ZONE"] == "X") & (
+        hazard_areas_df["ZONE_SUBTY"] == "AREA WITH REDUCED FLOOD RISK DUE TO LEVEE"
+    )
+    area_not_included_dq = hazard_areas_df["FLD_ZONE"] == "AREA NOT INCLUDED"
 
-    hazard_areas_df['label'] = ''
-    hazard_areas_df.loc[one_per_annual_flood_dq, 'label'] = '1% Annual Chance Flood Hazard'
-    hazard_areas_df.loc[regulatory_floodway_dq, 'label'] = 'Regulatory Floodway'
-    hazard_areas_df.loc[undet_flood_hazard_dq, 'label'] = 'Area of Undetermined Flood Hazard'
-    hazard_areas_df.loc[point_oh_two_percent_annual_flood_dq, 'label'] = '0.2% Annual Chance Flood Hazard'
-    hazard_areas_df.loc[reduced_risk_levee_dq, 'label'] = 'Area with Reduced Flood Risk due to Levee'
-    hazard_areas_df.loc[area_not_included_dq, 'label'] = 'Area Not Included'
+    hazard_areas_df["label"] = ""
+    hazard_areas_df.loc[one_per_annual_flood_dq, "label"] = "1% Annual Chance Flood Hazard"
+    hazard_areas_df.loc[regulatory_floodway_dq, "label"] = "Regulatory Floodway"
+    hazard_areas_df.loc[undet_flood_hazard_dq, "label"] = "Area of Undetermined Flood Hazard"
+    hazard_areas_df.loc[point_oh_two_percent_annual_flood_dq, "label"] = "0.2% Annual Chance Flood Hazard"
+    hazard_areas_df.loc[reduced_risk_levee_dq, "label"] = "Area with Reduced Flood Risk due to Levee"
+    hazard_areas_df.loc[area_not_included_dq, "label"] = "Area Not Included"
 
     #: fill null strings with empty string '' to fix featureset error
     for col in hazard_areas_df.columns:
-        if hazard_areas_df[col].dtype == 'string':
-            hazard_areas_df[col].fillna('', inplace=True)
+        if hazard_areas_df[col].dtype == "string":
+            hazard_areas_df[col].fillna("", inplace=True)
 
     return hazard_areas_df
 
 
 def _extract_layer(module_logger, fema_extractor, layer):
-    module_logger.info('Extracting %s...', layer['name'])
+    module_logger.info("Extracting %s...", layer["name"])
     service_layer = extract.ServiceLayer(
-        f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause='DFIRM_ID LIKE \'49%\''
+        f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause="DFIRM_ID LIKE '49%'"
     )
     layer_df = fema_extractor.get_features(service_layer)
     return layer_df
 
 
 def _transform_layer(module_logger, layer, layer_df):
-    module_logger.info('Transforming %s...', layer['name'])
-    if layer['name'] == 'S_Fld_Haz_Ar':
+    module_logger.info("Transforming %s...", layer["name"])
+    if layer["name"] == "S_Fld_Haz_Ar":
         layer_df = _hazard_areas(layer_df)
 
         #: make columns match
-    layer_df.columns = [col.lower() if col not in ['SHAPE', 'OBJECTID'] else col for col in layer_df.columns]
-    layer_df.rename(columns={'globalid': 'global_id'}, inplace=True)
-    layer_df.drop(columns=['shape.stlength()', 'shape.starea()'], errors='ignore', inplace=True)
+    layer_df.columns = [col.lower() if col not in ["SHAPE", "OBJECTID"] else col for col in layer_df.columns]
+    layer_df.rename(columns={"globalid": "global_id"}, inplace=True)
+    layer_df.drop(columns=["shape.stlength()", "shape.starea()"], errors="ignore", inplace=True)
 
     #: Fix various field types if the layer has them set
-    for method, list_name in zip([
-        transform.DataCleaning.switch_to_datetime, transform.DataCleaning.switch_to_float,
-        transform.DataCleaning.switch_to_nullable_int
-    ], ['date_fields', 'double_fields', 'int_fields']):
+    for method, list_name in zip(
+        [
+            transform.DataCleaning.switch_to_datetime,
+            transform.DataCleaning.switch_to_float,
+            transform.DataCleaning.switch_to_nullable_int,
+        ],
+        ["date_fields", "double_fields", "int_fields"],
+    ):
         try:
             layer_df = method(layer_df, layer[list_name])
         except KeyError:
             pass
 
     #: Drop rows with empty geometries
-    empty_geometries = layer_df['SHAPE'].isnull()
+    empty_geometries = layer_df["SHAPE"].isnull()
     if empty_geometries.any():
         module_logger.warning(
-            'Dropping %s rows with empty geometries (indices %s)', empty_geometries.sum(),
-            empty_geometries[empty_geometries].index.tolist()
+            "Dropping %s rows with empty geometries (indices %s)",
+            empty_geometries.sum(),
+            empty_geometries[empty_geometries].index.tolist(),
         )
-        layer_df.dropna(subset=['SHAPE'], inplace=True)
+        layer_df.dropna(subset=["SHAPE"], inplace=True)
 
     return layer_df
 
 
 def _load_layer(module_logger, tempdir, gis, layer, layer_df):
-    run_dir = Path(tempdir) / layer['name']
+    run_dir = Path(tempdir) / layer["name"]
     try:
         run_dir.mkdir()
     except FileExistsError:
         shutil.rmtree(run_dir)
         run_dir.mkdir()
 
-    module_logger.info('Loading %s...', layer['name'])
-    feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], run_dir)
+    module_logger.info("Loading %s...", layer["name"])
+    feature_layer = load.FeatureServiceUpdater(gis, layer["itemid"], run_dir)
     features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=False)
 
     return features_loaded
 
 
 def _update_hazard_layer_symbology(gis):
-    layer_item = gis.content.get(config.FEMA_LAYERS['S_Fld_Haz_Ar']['itemid'])
+    layer_item = gis.content.get(config.FEMA_LAYERS["S_Fld_Haz_Ar"]["itemid"])
     layer_data = layer_item.get_data()
 
     #: Try to get the symbology file from a specific location in the container (as per dockerfile's COPY)
     try:
-        json_path = Path('/app/src/nfhl/fld_haz_ar_drawingInfo.json')
-        with json_path.open('r', encoding='utf-8') as symbology_file:
+        json_path = Path("/app/src/nfhl/fld_haz_ar_drawingInfo.json")
+        with json_path.open("r", encoding="utf-8") as symbology_file:
             symbology_json = json.load(symbology_file)
 
     #: otherwise, use a relative path
     except FileNotFoundError:
-        json_path = Path(__file__).parent / 'fld_haz_ar_drawingInfo.json'
-        with json_path.open('r', encoding='utf-8') as symbology_file:
+        json_path = Path(__file__).parent / "fld_haz_ar_drawingInfo.json"
+        with json_path.open("r", encoding="utf-8") as symbology_file:
             symbology_json = json.load(symbology_file)
 
-    layer_data['layers'][0]['layerDefinition']['drawingInfo'] = symbology_json
-    result = utils.retry(layer_item.update, item_properties={'text': json.dumps(layer_data)})
+    layer_data["layers"][0]["layerDefinition"]["drawingInfo"] = symbology_json
+    result = utils.retry(layer_item.update, item_properties={"text": json.dumps(layer_data)})
     return result
 
 
 def process():  # pylint: disable=too-many-locals
-    """The main function that does all the work.
-    """
+    """The main function that does all the work."""
 
     #: Set up secrets, tempdir, supervisor, and logging
     start = datetime.now()
@@ -258,42 +268,42 @@ def process():  # pylint: disable=too-many-locals
                 features_loaded = utils.retry(_load_layer, module_logger, tempdir, gis, layer, layer_df)
                 del layer_df
             except Exception:
-                module_logger.exception('Error loading %s', name)
-                features_loaded = 'error'
+                module_logger.exception("Error loading %s", name)
+                features_loaded = "error"
             feature_counts[name] = features_loaded
 
-        module_logger.info('Updating hazard area symbology...')
+        module_logger.info("Updating hazard area symbology...")
         try:
             hazard_area_result = _update_hazard_layer_symbology(gis)
         except Exception:
-            module_logger.exception('Error updating hazard area symbology')
+            module_logger.exception("Error updating hazard area symbology")
             hazard_area_result = False
 
         end = datetime.now()
 
         summary_message = MessageDetails()
-        summary_message.subject = f'{config.SKID_NAME} Update Summary'
+        summary_message.subject = f"{config.SKID_NAME} Update Summary"
         summary_rows = [
             f'{config.SKID_NAME} update {start.strftime("%Y-%m-%d")}',
-            '=' * 20,
-            '',
+            "=" * 20,
+            "",
             f'Start time: {start.strftime("%H:%M:%S")}',
             f'End time: {end.strftime("%H:%M:%S")}',
-            f'Duration: {str(end-start)}',
-            'Update Counts:',
+            f"Duration: {str(end-start)}",
+            "Update Counts:",
         ]
-        summary_rows.extend([f'{name}: {count}' for name, count in feature_counts.items()])
-        summary_rows.append(f'Hazard Area Symbology Updated: {hazard_area_result}')
+        summary_rows.extend([f"{name}: {count}" for name, count in feature_counts.items()])
+        summary_rows.append(f"Hazard Area Symbology Updated: {hazard_area_result}")
 
-        summary_message.message = '\n'.join(summary_rows)
+        summary_message.message = "\n".join(summary_rows)
         summary_message.attachments = tempdir_path / log_name
 
         skid_supervisor.notify(summary_message)
 
         #: Remove file handler so the tempdir will close properly
-        loggers = [logging.getLogger(config.SKID_NAME), logging.getLogger('palletjack')]
+        loggers = [logging.getLogger(config.SKID_NAME), logging.getLogger("palletjack")]
         _remove_log_file_handlers(log_name, loggers)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     process()
