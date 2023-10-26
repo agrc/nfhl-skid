@@ -28,20 +28,22 @@ def test_process_continues_on_one_layer_failure(mocker, caplog):
         _initialize=mocker.DEFAULT,
         _update_hazard_layer_symbology=mocker.DEFAULT,
         SimpleNamespace=mocker.DEFAULT,
+        _transform_layer=mocker.DEFAULT,
+        _load_layer=mocker.DEFAULT,
     )
     mocker.patch('nfhl.main.arcgis')
     mocker.patch('nfhl.main.extract')
     mocker.patch('nfhl.main.config', FEMA_LAYERS={'one': {'name': 'one'}, 'two': {'name': 'two'}}, SKID_NAME='foo')
     mocker.patch('palletjack.utils.sleep')
 
-    operate_mock = mocker.patch('nfhl.main._operate_on_layer')
-    operate_mock.side_effect = [Exception('one_1'), Exception('one_2'), Exception('one_3'), Exception('one_4'), 42]
+    extract_mock = mocker.patch('nfhl.main._extract_layer')
+    extract_mock.side_effect = [Exception('one_1'), Exception('one_2'), Exception('one_3'), Exception('one_4'), 42]
 
     main.process()
 
     assert 'Error loading one' in caplog.text
-    assert operate_mock.call_count == 5
-    assert operate_mock.call_args.args[4] == {'name': 'two'}
+    assert extract_mock.call_count == 5
+    assert extract_mock.call_args_list[4].args[2] == {'name': 'two'}
 
 
 def test_process_continues_on_failed_area_hazard_symbology_update(mocker, caplog):
@@ -49,7 +51,9 @@ def test_process_continues_on_failed_area_hazard_symbology_update(mocker, caplog
         'nfhl.main',
         _get_secrets=mocker.DEFAULT,
         _initialize=mocker.DEFAULT,
-        _operate_on_layer=mocker.DEFAULT,
+        _extract_layer=mocker.DEFAULT,
+        _transform_layer=mocker.DEFAULT,
+        _load_layer=mocker.DEFAULT,
         SimpleNamespace=mocker.DEFAULT,
     )
     mocker.patch('nfhl.main.arcgis')
