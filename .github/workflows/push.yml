@@ -55,63 +55,42 @@ jobs:
       contents: read
 
     steps:
-      - name: ⬇️ Set up code
-        uses: actions/checkout@v4
+      - name: 🚢 Deploy
+        uses: agrc/cloud-run-docker-deploy-composite-action@v1
         with:
-          show-progress: false
-
-      - name: 🗝️ Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v1
-        with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-
-      - name: 🚀 Deploy to Cloud Function
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v1
-        with:
-          name: nfhl-skid
-          runtime: python39
-          entry_point: main
-          source_dir: src/nfhl
-          service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
-          event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/saturday-night-topic
-          deploy_timeout: 600
-          memory_mb: 512
-          timeout: 540
-          secret_volumes: |
+          identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          service: nfhl
+          flags: |
+            --cpu=1
+            --memory=512Mi
+            --min-instances=0
+            --max-instances=1
+            --timeout=180m
+            --no-allow-unauthenticated
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          mounted-secrets:
             /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets
-
-      - name: 📥 Create PubSub topic
-        run: |
-          if [ ! "$(gcloud pubsub topics list | grep saturday-night-topic)" ]; then
-            gcloud pubsub topics create saturday-night-topic --quiet
-          fi
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
-          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep monday-morning)" ]; then
-            gcloud scheduler jobs create pubsub monday-morning \
-              --description="Trigger the nfhl-skid bot once a week on monday morning" \
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
+            gcloud scheduler jobs create http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --topic=saturday-night-topic \
-              --message-body='{"run": "now"}' \
-              --quiet
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           else
-            gcloud scheduler jobs update pubsub monday-morning \
-              --description="Trigger the nfhl-skid bot once a week on monday morning" \
+            gcloud scheduler jobs update http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --topic=saturday-night-topic \
-              --message-body='{"run": "now"}' \
-              --quiet
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           fi
 
   deploy-prod:
@@ -126,61 +105,40 @@ jobs:
       contents: read
 
     steps:
-      - name: ⬇️ Set up code
-        uses: actions/checkout@v4
+      - name: 🚢 Deploy
+        uses: agrc/cloud-run-docker-deploy-composite-action@v1
         with:
-          show-progress: false
-
-      - name: 🗝️ Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v1
-        with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-
-      - name: 🚀 Deploy to Cloud Function
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v1
-        with:
-          name: nfhl-skid
-          runtime: python39
-          entry_point: main
-          source_dir: src/projectname
-          service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
-          event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/saturday-night-topic
-          deploy_timeout: 600
-          memory_mb: 512
-          timeout: 540
-          secret_volumes: |
+          identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          service: nfhl
+          flags: |
+            --cpu=1
+            --memory=512Mi
+            --min-instances=0
+            --max-instances=1
+            --timeout=180m
+            --no-allow-unauthenticated
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          mounted-secrets:
             /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets
-
-      - name: 📥 Create PubSub topic
-        run: |
-          if [ ! "$(gcloud pubsub topics list | grep saturday-night-topic)" ]; then
-            gcloud pubsub topics create saturday-night-topic --quiet
-          fi
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
-          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep monday-morning)" ]; then
-            gcloud scheduler jobs create pubsub monday-morning \
-              --description="Trigger the nfhl-skid bot once a week on monday morning" \
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
+            gcloud scheduler jobs create http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --topic=saturday-night-topic \
-              --message-body='{"run": "now"}' \
-              --quiet
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           else
-            gcloud scheduler jobs update pubsub monday-morning \
-              --description="Trigger the nfhl-skid bot once a week on monday morning" \
+            gcloud scheduler jobs update http saturday-evening \
+              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --topic=saturday-night-topic \
-              --message-body='{"run": "now"}' \
-              --quiet
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           fi
