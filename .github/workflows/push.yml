@@ -71,7 +71,7 @@ jobs:
             --no-allow-unauthenticated
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           mounted-secrets:
-            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/secrets/skid-secrets:latest
+            /secrets/app/secrets.json=skid-secrets:latest
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
@@ -121,7 +121,7 @@ jobs:
             --no-allow-unauthenticated
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           mounted-secrets:
-            /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/secrets/skid-secrets:latest
+            /secrets/app/secrets.json=skid-secrets:latest
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
