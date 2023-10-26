@@ -82,7 +82,7 @@ jobs:
           event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/saturday-night-topic
           deploy_timeout: 600
           memory_mb: 512
-          timeout: 240
+          timeout: 540
           secret_volumes: |
             /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets
 
@@ -153,7 +153,7 @@ jobs:
           event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/saturday-night-topic
           deploy_timeout: 600
           memory_mb: 512
-          timeout: 240
+          timeout: 540
           secret_volumes: |
             /secrets/app/secrets.json=${{secrets.PROJECT_ID}}/skid-secrets
 
