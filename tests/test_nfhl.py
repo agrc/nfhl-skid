@@ -1,5 +1,4 @@
 from nfhl import main
-# import pytest
 
 
 def test_get_secrets_from_gcp_location(mocker):
