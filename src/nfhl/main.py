@@ -5,6 +5,7 @@ Run the nfhl-skid script as a cloud function.
 """
 import json
 import logging
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -153,6 +154,13 @@ def _hazard_areas(hazard_areas_df):
 
 def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
 
+    run_dir = tempdir / layer['name']
+    try:
+        run_dir.mkdir()
+    except FileExistsError:
+        shutil.rmtree(run_dir)
+        run_dir.mkdir()
+
     module_logger.info('Extracting %s...', layer['name'])
     service_layer = extract.ServiceLayer(
         f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause='DFIRM_ID LIKE \'49%\''
@@ -179,8 +187,9 @@ def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
             pass
 
     module_logger.info('Loading %s...', layer['name'])
-    feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], tempdir)
+    feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], run_dir)
     features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=False)
+
     return features_loaded
 
 
