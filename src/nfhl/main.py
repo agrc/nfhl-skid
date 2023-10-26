@@ -245,6 +245,7 @@ def process():  # pylint: disable=too-many-locals
                 layer_df = utils.retry(_extract_layer, module_logger, fema_extractor, layer)
                 layer_df = utils.retry(_transform_layer, module_logger, layer, layer_df)
                 features_loaded = utils.retry(_load_layer, module_logger, tempdir, gis, layer, layer_df)
+                del layer_df
             except Exception:
                 module_logger.exception('Error loading %s', name)
                 features_loaded = 'error'
