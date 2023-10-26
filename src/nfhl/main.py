@@ -152,21 +152,16 @@ def _hazard_areas(hazard_areas_df):
     return hazard_areas_df
 
 
-def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
-
-    run_dir = Path(tempdir) / layer['name']
-    try:
-        run_dir.mkdir()
-    except FileExistsError:
-        shutil.rmtree(run_dir)
-        run_dir.mkdir()
-
+def _extract_layer(module_logger, fema_extractor, layer):
     module_logger.info('Extracting %s...', layer['name'])
     service_layer = extract.ServiceLayer(
         f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause='DFIRM_ID LIKE \'49%\''
     )
     layer_df = fema_extractor.get_features(service_layer)
+    return layer_df
 
+
+def _transform_layer(module_logger, layer, layer_df):
     module_logger.info('Transforming %s...', layer['name'])
     if layer['name'] == 'S_Fld_Haz_Ar':
         layer_df = _hazard_areas(layer_df)
@@ -185,6 +180,26 @@ def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
             layer_df = method(layer_df, layer[list_name])
         except KeyError:
             pass
+
+    #: Drop rows with empty geometries
+    empty_geometries = layer_df['SHAPE'].isnull()
+    if empty_geometries.any():
+        module_logger.warning(
+            'Dropping %s rows with empty geometries (indices %s)', empty_geometries.sum(),
+            empty_geometries[empty_geometries].index.tolist()
+        )
+        layer_df.dropna(subset=['SHAPE'], inplace=True)
+
+    return layer_df
+
+
+def _load_layer(module_logger, tempdir, gis, layer, layer_df):
+    run_dir = Path(tempdir) / layer['name']
+    try:
+        run_dir.mkdir()
+    except FileExistsError:
+        shutil.rmtree(run_dir)
+        run_dir.mkdir()
 
     module_logger.info('Loading %s...', layer['name'])
     feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], run_dir)
@@ -227,7 +242,9 @@ def process():  # pylint: disable=too-many-locals
 
         for name, layer in config.FEMA_LAYERS.items():
             try:
-                features_loaded = utils.retry(_operate_on_layer, module_logger, tempdir, gis, fema_extractor, layer)
+                layer_df = utils.retry(_extract_layer, module_logger, fema_extractor, layer)
+                layer_df = utils.retry(_transform_layer, module_logger, layer, layer_df)
+                features_loaded = utils.retry(_load_layer, module_logger, tempdir, gis, layer, layer_df)
             except Exception:
                 module_logger.exception('Error loading %s', name)
                 features_loaded = 'error'
