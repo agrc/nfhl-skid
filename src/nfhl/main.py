@@ -154,7 +154,7 @@ def _hazard_areas(hazard_areas_df):
 
 def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
 
-    run_dir = tempdir / layer['name']
+    run_dir = Path(tempdir) / layer['name']
     try:
         run_dir.mkdir()
     except FileExistsError:
