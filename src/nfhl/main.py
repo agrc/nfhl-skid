@@ -172,7 +172,7 @@ def _transform_layer(module_logger, layer, layer_df):
     if layer["name"] == "S_Fld_Haz_Ar":
         layer_df = _hazard_areas(layer_df)
 
-        #: make columns match
+    #: make columns match
     layer_df.columns = [col.lower() if col not in ["SHAPE", "OBJECTID"] else col for col in layer_df.columns]
     layer_df.rename(columns={"globalid": "global_id"}, inplace=True)
     layer_df.drop(columns=["shape.stlength()", "shape.starea()"], errors="ignore", inplace=True)
