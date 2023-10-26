@@ -12,9 +12,8 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 
 import arcgis
-from palletjack import (
-    FeatureServiceAttachmentsUpdater, FeatureServiceInlineUpdater, GoogleDriveDownloader, GSheetLoader
-)
+from palletjack import extract, load, transform, utils
+import pandas as pd
 from supervisor.message_handlers import SendGridHandler
 from supervisor.models import MessageDetails, Supervisor
 
@@ -118,6 +117,83 @@ def _remove_log_file_handlers(log_name, loggers):
             except Exception as error:
                 pass
 
+
+def _hazard_areas(hazard_areas_df):
+    #: Calculate label values for symbology
+    one_per_annual_flood_dq = (hazard_areas_df['FLD_ZONE'].isin(['A', 'AE', 'AH', 'AO', 'VE']
+                                                               )) & (hazard_areas_df['ZONE_SUBTY'].isnull())
+    regulatory_floodway_dq = (hazard_areas_df['FLD_ZONE'] == 'AE'
+                             ) & (hazard_areas_df['ZONE_SUBTY'].isin(['FLOODWAY', 'FLOODWAY CONTAINED IN CHANNEL']))
+    undet_flood_hazard_dq = (hazard_areas_df['FLD_ZONE'] == 'D')
+    point_oh_two_percent_annual_flood_dq = (hazard_areas_df['FLD_ZONE'] == 'X') & (
+        hazard_areas_df['ZONE_SUBTY'].isin([
+            '0.2 PCT ANNUAL CHANCE FLOOD HAZARD', '1 PCT DEPTH LESS THAN 1 FOOT',
+            '1 PCT DRAINAGE AREA LESS THAN 1 SQUARE MILE'
+        ])
+    )
+    reduced_risk_levee_dq = (hazard_areas_df['FLD_ZONE']
+                             == 'X') & (hazard_areas_df['ZONE_SUBTY'] == 'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE')
+    area_not_included_dq = (hazard_areas_df['FLD_ZONE'] == 'AREA NOT INCLUDED')
+
+    hazard_areas_df['label'] = ''
+    hazard_areas_df.loc[one_per_annual_flood_dq, 'label'] = '1% Annual Chance Flood Hazard'
+    hazard_areas_df.loc[regulatory_floodway_dq, 'label'] = 'Regulatory Floodway'
+    hazard_areas_df.loc[undet_flood_hazard_dq, 'label'] = 'Area of Undetermined Flood Hazard'
+    hazard_areas_df.loc[point_oh_two_percent_annual_flood_dq, 'label'] = '0.2% Annual Chance Flood Hazard'
+    hazard_areas_df.loc[reduced_risk_levee_dq, 'label'] = 'Area with Reduced Flood Risk due to Levee'
+    hazard_areas_df.loc[area_not_included_dq, 'label'] = 'Area Not Included'
+
+    #: fill null strings with empty string '' to fix featureset error
+    for col in hazard_areas_df.columns:
+        if hazard_areas_df[col].dtype == 'string':
+            hazard_areas_df[col].fillna('', inplace=True)
+
+    return hazard_areas_df
+
+
+def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
+
+    module_logger.info('Extracting %s...', layer['name'])
+    service_layer = extract.ServiceLayer(
+        f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause='DFIRM_ID LIKE \'49%\''
+    )
+    layer_df = fema_extractor.get_features(service_layer)
+
+    module_logger.info('Transforming %s...', layer['name'])
+    if layer['name'] == 'S_Fld_Haz_Ar':
+        layer_df = _hazard_areas(layer_df)
+
+        #: make columns match
+    layer_df.columns = [col.lower() if col not in ['SHAPE', 'OBJECTID'] else col for col in layer_df.columns]
+    layer_df.rename(columns={'globalid': 'global_id'}, inplace=True)
+    layer_df.drop(columns=['shape.stlength()', 'shape.starea()'], errors='ignore', inplace=True)
+
+    #: Fix various field types if the layer has them set
+    for method, list_name in zip([
+        transform.DataCleaning.switch_to_datetime, transform.DataCleaning.switch_to_float,
+        transform.DataCleaning.switch_to_nullable_int
+    ], ['date_fields', 'double_fields', 'int_fields']):
+        try:
+            layer_df = method(layer_df, layer[list_name])
+        except KeyError:
+            pass
+
+    module_logger.info('Loading %s...', layer['name'])
+    feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], tempdir)
+    features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=True)
+    return features_loaded
+
+
+def _update_hazard_layer_symbology(gis):
+    layer_item = gis.content.get(config.FEMA_LAYERS['S_Fld_Haz_Ar']['itemid'])
+    layer_data = layer_item.get_data()
+    json_path = (Path(__file__).parent / 'fld_haz_ar_drawingInfo.json')
+    with json_path.open('r', encoding='utf-8') as symbology_file:
+        layer_data['layers'][0]['layerDefinition']['drawingInfo'] = json.load(symbology_file)
+    result = utils.retry(layer_item.update, item_properties={'text': json.dumps(layer_data)})
+    return result
+
+
 def process():
     """The main function that does all the work.
     """
@@ -133,14 +209,27 @@ def process():
         log_path = tempdir_path / log_name
 
         skid_supervisor = _initialize(log_path, secrets.SENDGRID_API_KEY)
-        module_logger = logging.getLogger(config.SKID_NAME)
-
         #: Get our GIS object via the ArcGIS API for Python
         gis = arcgis.gis.GIS(config.AGOL_ORG, secrets.AGOL_USER, secrets.AGOL_PASSWORD)
+        fema_extractor = extract.RESTServiceLoader(config.SERVICE_URL, timeout=config.TIMEOUT)
+        module_logger = logging.getLogger(config.SKID_NAME)
 
-        #########################################################################
-        #: Use the various palletjack classes and other code to do your work here
-        #########################################################################
+        feature_counts = {}
+
+        for name, layer in config.FEMA_LAYERS.items():
+            try:
+                features_loaded = utils.retry(_operate_on_layer, module_logger, tempdir, gis, fema_extractor, layer)
+            except Exception:
+                module_logger.exception('Error loading %s', name)
+                features_loaded = 'error'
+            feature_counts[name] = features_loaded
+
+        module_logger.info('Updating hazard area symbology...')
+        try:
+            hazard_area_result = _update_hazard_layer_symbology(gis)
+        except Exception:
+            module_logger.exception('Error updating hazard area symbology')
+            hazard_area_result = False
 
         end = datetime.now()
 
@@ -153,9 +242,10 @@ def process():
             f'Start time: {start.strftime("%H:%M:%S")}',
             f'End time: {end.strftime("%H:%M:%S")}',
             f'Duration: {str(end-start)}',
-            #: Add other rows here containing summary info captured/calculated during the working portion of the skid,
-            #: like the number of rows updated or the number of successful attachment overwrites.
+            'Update Counts:',
         ]
+        summary_rows.extend([f'{name}: {count}' for name, count in feature_counts.items()])
+        summary_rows.append(f'Hazard Area Symbology Updated: {hazard_area_result}')
 
         summary_message.message = '\n'.join(summary_rows)
         summary_message.attachments = tempdir_path / log_name
@@ -165,8 +255,6 @@ def process():
         #: Remove file handler so the tempdir will close properly
         loggers = [logging.getLogger(config.SKID_NAME), logging.getLogger('palletjack')]
         _remove_log_file_handlers(log_name, loggers)
-
-
 
 
 def main(event, context):  # pylint: disable=unused-argument
@@ -197,6 +285,7 @@ def main(event, context):  # pylint: disable=unused-argument
 
     #: Call process() and any other functions you want to be run as part of the skid here.
     process()
+
 
 #: Putting this here means you can call the file via `python main.py` and it will run. Useful for pre-GCF testing.
 if __name__ == '__main__':
