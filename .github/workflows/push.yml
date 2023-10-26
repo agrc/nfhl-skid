@@ -55,23 +55,79 @@ jobs:
       contents: read
 
     steps:
-      - name: 🚢 Deploy
-        uses: agrc/cloud-run-docker-deploy-composite-action@v1
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
         with:
-          identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          project-id: ${{ secrets.PROJECT_ID }}
-          service: nfhl
-          flags: |
-            --cpu=1
-            --memory=512Mi
-            --min-instances=0
-            --max-instances=1
-            --timeout=180m
-            --no-allow-unauthenticated
-            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          mounted-secrets:
-            /secrets/app/secrets.json=skid-secrets:latest
+          show-progress: false
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: "access_token"
+
+      - name: 🐳 Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v2
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            type=raw,value=latest
+
+      - name: 📦 Build and push image
+        uses: docker/build-push-action@v4
+        with:
+          builder: ${{ steps.builder.outputs.name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          context: .
+          file: ./Dockerfile
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: 🚀 Deploy to Cloud Run Job
+        run: |
+          if [ ! "$(gcloud run jobs list | grep default)" ]; then
+            gcloud run jobs create default \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --memory=512Mi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 \
+              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
+              --task-timeout 3h
+          else
+            gcloud run jobs update default \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --memory=512Mi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 \
+              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
+              --task-timeout 3h
+          fi
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
@@ -81,7 +137,7 @@ jobs:
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
               --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           else
             gcloud scheduler jobs update http saturday-evening \
@@ -89,7 +145,7 @@ jobs:
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
               --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           fi
 
@@ -105,23 +161,79 @@ jobs:
       contents: read
 
     steps:
-      - name: 🚢 Deploy
-        uses: agrc/cloud-run-docker-deploy-composite-action@v1
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
         with:
-          identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-          project-id: ${{ secrets.PROJECT_ID }}
-          service: nfhl
-          flags: |
-            --cpu=1
-            --memory=512Mi
-            --min-instances=0
-            --max-instances=1
-            --timeout=180m
-            --no-allow-unauthenticated
-            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          mounted-secrets:
-            /secrets/app/secrets.json=skid-secrets:latest
+          show-progress: false
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: "access_token"
+
+      - name: 🐳 Set up Docker Buildx
+        id: builder
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v2
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            type=raw,value=latest
+
+      - name: 📦 Build and push image
+        uses: docker/build-push-action@v4
+        with:
+          builder: ${{ steps.builder.outputs.name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          context: .
+          file: ./Dockerfile
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: 🚀 Deploy to Cloud Run Job
+        run: |
+          if [ ! "$(gcloud run jobs list | grep default)" ]; then
+            gcloud run jobs create default \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --memory=512Mi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 \
+              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
+              --task-timeout 3h
+          else
+            gcloud run jobs update default \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --memory=512Mi \
+              --cpu=1 \
+              --max-retries 0 \
+              --parallelism 0 \
+              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
+              --task-timeout 3h
+          fi
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
@@ -131,7 +243,7 @@ jobs:
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
               --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           else
             gcloud scheduler jobs update http saturday-evening \
@@ -139,6 +251,6 @@ jobs:
               --schedule="0 23 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/nfhl:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
               --oauth-service-account-email=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           fi
