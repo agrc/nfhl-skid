@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 setup.py
-A module that installs the SKIDNAME skid as a module
+A module that installs the nfhl-skid skid as a module
 """
 from glob import glob
 from os.path import basename, splitext
@@ -11,16 +11,16 @@ from setuptools import find_packages, setup
 
 #: Load version from source file
 version = {}
-with open('src/skidname/version.py') as fp:
+with open('src/nfhl-skid/version.py') as fp:
     exec(fp.read(), version)
 
 setup(
-    name='skidname',
+    name='nfhl-skid',
     version=version['__version__'],
     license='MIT',
-    description='Update the PROJECTNAME data from SOURCE via GCF',
-    author='UGRC',
-    author_email='ugrc@utah.gov',
+    description='Update the DEM Flood Map data from FEMA\'s map services via GCF',
+    author='Jacob Adams',
+    author_email='jdadams@utah.gov',
     url='https://github.com/agrc/skid',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -34,7 +34,7 @@ setup(
         'Topic :: Utilities',
     ],
     project_urls={
-        'Issue Tracker': 'https://github.com/agrc/python/issues',
+        'Issue Tracker': 'https://github.com/agrc/nfhl-skid/issues',
     },
     keywords=['gis'],
     install_requires=[
@@ -60,6 +60,6 @@ setup(
         'pytest-runner',
     ],
     entry_points={'console_scripts': [
-        'skidname = skidname.main:main',
+        'nfhl-skid = nfhl-skid.main:main',
     ]},
 )

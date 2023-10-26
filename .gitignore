@@ -1,5 +1,6 @@
 secrets.json
 sheets-sa.json
+upload.gdb/
 
 *.py[cod]
 
