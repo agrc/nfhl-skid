@@ -12,4 +12,4 @@ WORKDIR /app
 
 RUN pip install .
 
-CMD exec nfhl-skid
+ENTRYPOINT ["nfhl-skid"]
