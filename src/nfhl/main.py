@@ -180,7 +180,7 @@ def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
 
     module_logger.info('Loading %s...', layer['name'])
     feature_layer = load.FeatureServiceUpdater(gis, layer['itemid'], tempdir)
-    features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=True)
+    features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=False)
     return features_loaded
 
 
