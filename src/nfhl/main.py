@@ -13,7 +13,6 @@ from types import SimpleNamespace
 
 import arcgis
 from palletjack import extract, load, transform, utils
-import pandas as pd
 from supervisor.message_handlers import SendGridHandler
 from supervisor.models import MessageDetails, Supervisor
 
@@ -27,7 +26,8 @@ except ImportError:
 
 
 def _get_secrets():
-    """A helper method for loading secrets from either a GCF mount point or the local src/nfhl-skid/secrets/secrets.json file
+    """A helper method for loading secrets from either a GCF mount point or the local src/nfhl-skid/secrets/secrets.
+    json file
 
     Raises:
         FileNotFoundError: If the secrets file can't be found.
@@ -43,7 +43,7 @@ def _get_secrets():
         return json.loads(Path('/secrets/app/secrets.json').read_text(encoding='utf-8'))
 
     #: Otherwise, try to load a local copy for local development
-    secret_folder = (Path(__file__).parent / 'secrets')
+    secret_folder = Path(__file__).parent / 'secrets'
     if secret_folder.exists():
         return json.loads((secret_folder / 'secrets.json').read_text(encoding='utf-8'))
 
@@ -114,7 +114,7 @@ def _remove_log_file_handlers(log_name, loggers):
                 if log_name in handler.stream.name:
                     logger.removeHandler(handler)
                     handler.close()
-            except Exception as error:
+            except Exception:
                 pass
 
 
@@ -124,7 +124,7 @@ def _hazard_areas(hazard_areas_df):
                                                                )) & (hazard_areas_df['ZONE_SUBTY'].isnull())
     regulatory_floodway_dq = (hazard_areas_df['FLD_ZONE'] == 'AE'
                              ) & (hazard_areas_df['ZONE_SUBTY'].isin(['FLOODWAY', 'FLOODWAY CONTAINED IN CHANNEL']))
-    undet_flood_hazard_dq = (hazard_areas_df['FLD_ZONE'] == 'D')
+    undet_flood_hazard_dq = hazard_areas_df['FLD_ZONE'] == 'D'
     point_oh_two_percent_annual_flood_dq = (hazard_areas_df['FLD_ZONE'] == 'X') & (
         hazard_areas_df['ZONE_SUBTY'].isin([
             '0.2 PCT ANNUAL CHANCE FLOOD HAZARD', '1 PCT DEPTH LESS THAN 1 FOOT',
@@ -133,7 +133,7 @@ def _hazard_areas(hazard_areas_df):
     )
     reduced_risk_levee_dq = (hazard_areas_df['FLD_ZONE']
                              == 'X') & (hazard_areas_df['ZONE_SUBTY'] == 'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE')
-    area_not_included_dq = (hazard_areas_df['FLD_ZONE'] == 'AREA NOT INCLUDED')
+    area_not_included_dq = hazard_areas_df['FLD_ZONE'] == 'AREA NOT INCLUDED'
 
     hazard_areas_df['label'] = ''
     hazard_areas_df.loc[one_per_annual_flood_dq, 'label'] = '1% Annual Chance Flood Hazard'
@@ -187,14 +187,14 @@ def _operate_on_layer(module_logger, tempdir, gis, fema_extractor, layer):
 def _update_hazard_layer_symbology(gis):
     layer_item = gis.content.get(config.FEMA_LAYERS['S_Fld_Haz_Ar']['itemid'])
     layer_data = layer_item.get_data()
-    json_path = (Path(__file__).parent / 'fld_haz_ar_drawingInfo.json')
+    json_path = Path(__file__).parent / 'fld_haz_ar_drawingInfo.json'
     with json_path.open('r', encoding='utf-8') as symbology_file:
         layer_data['layers'][0]['layerDefinition']['drawingInfo'] = json.load(symbology_file)
     result = utils.retry(layer_item.update, item_properties={'text': json.dumps(layer_data)})
     return result
 
 
-def process():
+def process():  # pylint: disable=too-many-locals
     """The main function that does all the work.
     """
 
