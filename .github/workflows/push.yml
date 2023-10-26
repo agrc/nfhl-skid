@@ -113,7 +113,7 @@ jobs:
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=1Gi \
+              --memory=2Gi \
               --cpu=1 \
               --max-retries 0 \
               --parallelism 0 \
@@ -124,7 +124,7 @@ jobs:
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=1Gi \
+              --memory=2Gi \
               --cpu=1 \
               --max-retries 0 \
               --parallelism 0 \
@@ -222,7 +222,7 @@ jobs:
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=1Gi \
+              --memory=2Gi \
               --cpu=1 \
               --max-retries 0 \
               --parallelism 0 \
@@ -233,7 +233,7 @@ jobs:
               --region us-central1 \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=1Gi \
+              --memory=2Gi \
               --cpu=1 \
               --max-retries 0 \
               --parallelism 0 \
