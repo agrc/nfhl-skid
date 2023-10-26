@@ -53,6 +53,7 @@ setup(
             'pytest-watch~=4.2',
             'pytest~=6.0',
             'yapf~=0.31',
+            'pytest-mock>=3.10,<3.12',
             'functions-framework',
         ]
     },
