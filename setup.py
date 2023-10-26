@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 
 #: Load version from source file
 version = {}
-with open('src/nfhl-skid/version.py') as fp:
+with open('src/nfhl/version.py') as fp:
     exec(fp.read(), version)
 
 setup(
@@ -38,8 +38,8 @@ setup(
     },
     keywords=['gis'],
     install_requires=[
-        'arcgis==2.0.*',
-        'ugrc-palletjack==2.2.*',
+        # 'arcgis==2.1.*',
+        'ugrc-palletjack==3.*',
         'agrc-supervisor==3.0.*',
     ],
     extras_require={
@@ -60,6 +60,6 @@ setup(
         'pytest-runner',
     ],
     entry_points={'console_scripts': [
-        'nfhl-skid = nfhl-skid.main:main',
+        'nfhl-skid = nfhl.main:main',
     ]},
 )
