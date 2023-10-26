@@ -61,6 +61,6 @@ setup(
         'pytest-runner',
     ],
     entry_points={'console_scripts': [
-        'nfhl-skid = nfhl.main:main',
+        'nfhl-skid = nfhl.main:process',
     ]},
 )
