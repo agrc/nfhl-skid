@@ -3,6 +3,9 @@ FROM python:3.9
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
 
+# Set the locale
+RUN apt-get update && apt-get install -y locales && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
 COPY . /app
 
 WORKDIR /app
