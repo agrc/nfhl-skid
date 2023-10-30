@@ -44,15 +44,15 @@ setup(
     extras_require={
         "tests": [
             "pylint-quotes~=0.2",
-            "pylint~=2.11",
-            "pytest-cov~=3.0",
+            "pylint>=2.11,<4.0",
+            "pytest-cov>=3,<5",
             "pytest-instafail~=0.4",
-            "pytest-isort~=2.0",
+            "pytest-isort>=2,<4",
             "pytest-pylint~=0.18",
             "pytest-watch~=4.2",
-            "pytest~=6.0",
-            "black>=23.3,<23.10",
-            "pytest-mock>=3.10,<3.12",
+            "pytest>=6,<8",
+            "black>=23.3,<23.11",
+            "pytest-mock>=3.10,<3.13",
             "functions-framework",
         ]
     },
