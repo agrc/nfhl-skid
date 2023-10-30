@@ -52,7 +52,7 @@ setup(
             "pytest-watch~=4.2",
             "pytest~=6.0",
             "black>=23.3,<23.10",
-            "pytest-mock>=3.10,<3.12",
+            "pytest-mock>=3.10,<3.13",
             "functions-framework",
         ]
     },
