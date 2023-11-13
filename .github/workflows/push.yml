@@ -137,7 +137,7 @@ jobs:
           if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
             gcloud scheduler jobs create http saturday-evening \
               --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-              --schedule="0 23 * * 6" \
+              --schedule="0 3 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
               --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
@@ -145,7 +145,7 @@ jobs:
           else
             gcloud scheduler jobs update http saturday-evening \
               --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-              --schedule="0 23 * * 6" \
+              --schedule="0 3 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
               --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
@@ -246,7 +246,7 @@ jobs:
           if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
           gcloud scheduler jobs create http saturday-evening \
             --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-            --schedule="0 23 * * 6" \
+            --schedule="0 3 * * 6" \
             --time-zone=America/Denver \
             --location=us-central1 \
             --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
@@ -254,7 +254,7 @@ jobs:
           else
             gcloud scheduler jobs update http saturday-evening \
               --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-              --schedule="0 23 * * 6" \
+              --schedule="0 3 * * 6" \
               --time-zone=America/Denver \
               --location=us-central1 \
               --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
