@@ -8,9 +8,9 @@ A script for updating flood map layers with the latest info from FEMA's NFHL lay
 
 nfhl-skid uses [palletjack](https://github.com/agrc/palletjack) to extract features from the FEMA MapServices one layer at a time using a SQL query to filter results to `DFIRM_ID LIKE '49%'` (49 being Utah's FIPS code). Each extracted layer is then used to overwrite a specified AGOL hosted feature service. These feature services are used by DEM in their flood map portal.
 
-The script uses robust retry logic to give it the best chance of succeeding even with FEMA's less-than-reliable (and/or overtaxed) server. In addition to the retry logic built into the individual components of palletjack, nfhl-skid will individually retry the extract, transform, and load steps three times (for a total of four attempts) to ensure that temporarily slow responses from the server don't scuttle the whole layer.
+The script uses robust retry logic to give it the best chance of succeeding even with FEMA's less-than-reliable (and/or overtaxed) server. In addition to the retry logic built into the individual components of palletjack, nfhl-skid will individually retry the extract, transform, and load steps of each layer three times (for a total of four attempts) to ensure that temporarily slow responses from the server don't scuttle the whole layer.
 
-In addition, the failure of one layer will not cause the entire skid to fail. However, because it uses truncate and load instead of in-line updating, failures in the load to AGOL step may leave empty feature classes. Existing data are saved to a `tempfile.TemporaryDirectory` during the truncate and load, but this directory is cleaned up when the script exits.
+In addition, if one layer fails it notes this and moves on to the next, ensuring that the failure of one layer will not cause the entire skid to fail. However, because it uses truncate and load instead of in-line updating, failures in the load to AGOL step may leave empty feature classes. Existing data are saved to a `tempfile.TemporaryDirectory` during the truncate and load, but this directory is cleaned up when the script exits.
 
 ## Runtime Environment
 
