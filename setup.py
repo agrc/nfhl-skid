@@ -51,7 +51,7 @@ setup(
             "pytest-pylint~=0.18",
             "pytest-watch~=4.2",
             "pytest>=6,<8",
-            "black>=23.3,<23.11",
+            "black>=23.3,<23.12",
             "pytest-mock>=3.10,<3.13",
             "functions-framework",
         ]
