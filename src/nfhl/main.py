@@ -240,6 +240,22 @@ def _update_hazard_layer_symbology(gis):
     return result
 
 
+def _delete_existing_gdb_item(gis, gdb_item_name, module_logger):
+    module_logger.info("Trying to delete existing GDB item '%s'...", gdb_item_name)
+
+    searches = gis.content.search(query=gdb_item_name, item_type="File Geodatabase")
+    if not searches:
+        module_logger.info("GDB item '%s' not found, proceeding", gdb_item_name)
+        return
+    if len(searches) > 1:
+        raise ValueError(f"Multiple GDBs found matching {gdb_item_name}")
+    gdb_item = searches[0]
+    try:
+        gdb_item.delete()
+    except Exception as error:
+        raise ValueError(f"Cannot delete '{gdb_item_name}' ({gdb_item.itemid})") from error
+
+
 def process():  # pylint: disable=too-many-locals
     """The main function that does all the work."""
 
@@ -265,6 +281,7 @@ def process():  # pylint: disable=too-many-locals
             try:
                 layer_df = utils.retry(_extract_layer, module_logger, fema_extractor, layer)
                 layer_df = utils.retry(_transform_layer, module_logger, layer, layer_df)
+                _delete_existing_gdb_item(gis, "palletjack Temporary gdb upload", module_logger)
                 features_loaded = utils.retry(_load_layer, module_logger, tempdir, gis, layer, layer_df)
                 del layer_df
             except Exception:
