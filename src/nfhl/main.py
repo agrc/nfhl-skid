@@ -241,7 +241,7 @@ def _update_hazard_layer_symbology(gis):
 
 
 def _delete_existing_gdb_item(gis, gdb_item_name, module_logger):
-    module_logger.info("Trying to delete existing GDB item '%s'...", gdb_item_name)
+    module_logger.info("Searching for and deleting GDB item '%s' if needed...", gdb_item_name)
 
     searches = gis.content.search(query=gdb_item_name, item_type="File Geodatabase")
     if not searches:
