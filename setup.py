@@ -38,8 +38,8 @@ setup(
     },
     keywords=["gis"],
     install_requires=[
-        "ugrc-palletjack>=4.2,<4.4",
-        "agrc-supervisor==3.0.*",
+        "ugrc-palletjack>=4.2,<4.5",
+        "agrc-supervisor>=3.0,<3.2",
     ],
     extras_require={
         "tests": [
@@ -51,7 +51,7 @@ setup(
             "pytest-pylint~=0.18",
             "pytest-watch~=4.2",
             "pytest>=6,<9",
-            "black>=23.3,<24.4",
+            "black>=23.3,<24.5",
             "pytest-mock>=3.10,<3.15",
             "functions-framework",
         ]
