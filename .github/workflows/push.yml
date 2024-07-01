@@ -93,7 +93,7 @@ jobs:
             latest
 
       - name: 📦 Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -202,7 +202,7 @@ jobs:
             latest
 
       - name: 📦 Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.builder.outputs.name }}
           tags: ${{ steps.meta.outputs.tags }}
