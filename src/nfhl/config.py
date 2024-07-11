@@ -11,7 +11,6 @@ AGOL_ORG = "https://utah-em.maps.arcgis.com"
 SENDGRID_SETTINGS = {  #: Settings for SendGridHandler
     "from_address": "noreply@utah.gov",
     "to_addresses": ["ugrc-developers@utah.gov", "hstrand@utah.gov"],
-    # "to_addresses": ["jdadams@utah.gov"],
     "prefix": f"{SKID_NAME} on {socket.gethostname()}: ",
 }
 LOG_LEVEL = logging.INFO
@@ -20,12 +19,6 @@ LOG_FILE_NAME = "log"
 TIMEOUT = 20
 SERVICE_URL = "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer"
 FEMA_LAYERS = {
-    # "S_LOMR": {
-    #     "number": 1,
-    #     "itemid": "8a38ed5038fa42b583743bcf58d7efee",
-    #     "name": "S_LOMR_testing",
-    #     "date_fields": ["eff_date"],
-    # },
     "S_LOMR": {
         "number": 1,
         "itemid": "647c5dfc31044b0aba7611f0b7b3ed62",
