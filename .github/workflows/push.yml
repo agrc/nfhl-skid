@@ -137,9 +137,9 @@ jobs:
           for i in $(gcloud scheduler jobs list --location=us-central1 --uri); do
             gcloud scheduler jobs delete $i --quiet
           done
-          gcloud scheduler jobs create http saturday-evening \
+          gcloud scheduler jobs create http nfhl-schedule \
             --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-            --schedule="0 3 * * 6" \
+            --schedule="0 3 * * 1" \
             --time-zone=America/Denver \
             --location=us-central1 \
             --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
@@ -236,20 +236,13 @@ jobs:
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
-          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep saturday-evening)" ]; then
-          gcloud scheduler jobs create http saturday-evening \
+          for i in $(gcloud scheduler jobs list --location=us-central1 --uri); do
+            gcloud scheduler jobs delete $i --quiet
+          done
+          gcloud scheduler jobs create http nfhl-schedule \
             --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-            --schedule="0 3 * * 6" \
+            --schedule="0 3 * * 1" \
             --time-zone=America/Denver \
             --location=us-central1 \
             --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
             --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          else
-            gcloud scheduler jobs update http saturday-evening \
-              --description="Trigger the nfhl-skid bot once a week on saturday evening" \
-              --schedule="0 3 * * 6" \
-              --time-zone=America/Denver \
-              --location=us-central1 \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/default:run" \
-              --oauth-service-account-email=scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          fi

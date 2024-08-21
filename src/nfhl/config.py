@@ -17,7 +17,7 @@ LOG_LEVEL = logging.INFO
 LOG_FILE_NAME = "log"
 
 TIMEOUT = 20
-SERVICE_URL = "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer"
+SERVICE_URL = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer"
 FEMA_LAYERS = {
     "S_LOMR": {
         "number": 1,
