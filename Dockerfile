@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 # Allow statements and log messages to immediately appear in the Knative logs
-ENV PYTHONUNBUFFERED True
+ENV PYTHONUNBUFFERED=True
 
 USER root
 RUN useradd -s /bin/bash dummy
