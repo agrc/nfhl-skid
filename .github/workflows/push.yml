@@ -116,13 +116,13 @@ jobs:
           secrets: /secrets/app/secrets.json=skid-secrets:latest
           timeout: 3h
           flags: >
-            --cpu=1
+            '--cpu=1
             --memory=3Gi
             --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
             --timeout=3h
             --max-instances=1
             --max-retries=0
-            --parallelism=0
+            --parallelism=0'
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
