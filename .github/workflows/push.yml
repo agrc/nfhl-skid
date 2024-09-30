@@ -107,30 +107,22 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: 🚀 Deploy to Cloud Run Job
-        run: |
-          if [ ! "$(gcloud run jobs list | grep default)" ]; then
-            gcloud run jobs create default \
-              --region us-central1 \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=3Gi \
-              --cpu=1 \
-              --max-retries 0 \
-              --parallelism 0 \
-              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
-              --task-timeout 3h
-          else
-            gcloud run jobs update default \
-              --region us-central1 \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --memory=3Gi \
-              --cpu=1 \
-              --max-retries 0 \
-              --parallelism 0 \
-              --set-secrets=/secrets/app/secrets.json=skid-secrets:latest \
-              --task-timeout 3h
-          fi
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          project_id: secrets.PROJECT_ID
+          region: us-central1
+          image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
+          job: default
+          secrets: /secrets/app/secrets.json=skid-secrets:latest
+          timeout: 3h
+          flags: >
+            --cpu=1
+            --memory=3Gi
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+            --timeout=3h
+            --max-instances=1
+            --max-retries=0
+            --parallelism=0
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
