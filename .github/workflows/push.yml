@@ -114,6 +114,7 @@ jobs:
           image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
           job: default
           secrets: /secrets/app/secrets.json=skid-secrets:latest
+          secrets_update_strategy: overwrite
           timeout: 3h
           flags: >
             '--cpu=1
