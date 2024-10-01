@@ -109,7 +109,7 @@ jobs:
       - name: 🚀 Deploy to Cloud Run Job
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          project_id: secrets.PROJECT_ID
+          project_id: ${{ secrets.PROJECT_ID }}
           region: us-central1
           image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
           job: default
