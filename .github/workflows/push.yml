@@ -117,13 +117,8 @@ jobs:
           secrets_update_strategy: overwrite
           timeout: 3h
           flags: >
-            '--cpu=1
-            --memory=3Gi
-            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-            --timeout=3h
-            --max-instances=1
-            --max-retries=0
-            --parallelism=0'
+            '--cpu 1 --memory 3Gi --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+            --timeout 3h --max-instances 1 --max-retries 0 --parallelism 0'
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
