@@ -55,7 +55,7 @@ jobs:
       contents: read
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Set up code
         uses: actions/checkout@v4
         with:
           show-progress: false
@@ -106,7 +106,7 @@ jobs:
       - name: ☁️ Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: 🚀 Deploy to Cloud Run Job
+      - name: 🚀 Deploy Cloud Run Job
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           project_id: ${{ secrets.PROJECT_ID }}
@@ -116,9 +116,11 @@ jobs:
           secrets: /secrets/app/secrets.json=skid-secrets:latest
           secrets_update_strategy: overwrite
           timeout: 3h
-          flags: >
-            '--cpu 1 --memory 3Gi --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-            --timeout 3h --max-instances 1 --max-retries 0 --parallelism 0'
+          flags: |
+            --memory=3Gi
+            --task-timeout=3h
+            --max-retries=0
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: 🕰️ Create Cloud Scheduler
         run: |
@@ -145,7 +147,7 @@ jobs:
       contents: read
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: ⬇️ Set up code
         uses: actions/checkout@v4
         with:
           show-progress: false
