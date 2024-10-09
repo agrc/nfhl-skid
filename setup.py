@@ -49,7 +49,6 @@ setup(
             "pytest-ruff==0.*",
             "pytest-watch==4.*",
             "pytest>=6,<9",
-            "black>=24.4.2,<24.9",
             "ruff==0.*",
             "functions-framework==3.8.*",
         ]
