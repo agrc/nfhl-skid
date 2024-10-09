@@ -213,9 +213,8 @@ def _load_layer(module_logger, tempdir, gis, layer, layer_df):
         run_dir.mkdir()
 
     module_logger.info("Loading %s...", layer["name"])
-    feature_layer = load.FeatureServiceUpdater(gis, layer["itemid"], run_dir)
-    features_loaded = feature_layer.truncate_and_load_features(layer_df, save_old=False)
-
+    feature_layer = load.ServiceUpdater(gis, layer["itemid"], working_dir=run_dir)
+    features_loaded = feature_layer.truncate_and_load(layer_df, save_old=False)
     return features_loaded
 
 
