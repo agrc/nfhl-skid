@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1](https://github.com/agrc/nfhl-skid/compare/v1.0.0...v1.0.1) (2025-01-24)
+
+
+### Dependencies
+
+* bump agrc-supervisor in the safe-dependencies group ([bff3d41](https://github.com/agrc/nfhl-skid/commit/bff3d41fd4f1c593f15bc9a004a2ecfa0743b621))
+* update pytest cov ([547cd9f](https://github.com/agrc/nfhl-skid/commit/547cd9fe132ae51a9c347ba1d94ed99a3c975591))
+* update ugrc supervisor ([fd4ff14](https://github.com/agrc/nfhl-skid/commit/fd4ff149534fa14cbd597b18959d762be495e35e))
+
 ## 1.0.0 (2024-10-15)
 
 
