@@ -21,7 +21,7 @@ setup(
     description="Update the DEM Flood Map data from FEMA's map services via GCF",
     author="Jacob Adams",
     author_email="jdadams@utah.gov",
-    url="https://github.com/agrc/skid",
+    url="https://github.com/agrc/nfhl-skid",
     packages=find_packages("src"),
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
@@ -39,7 +39,7 @@ setup(
     keywords=["gis"],
     install_requires=[
         "ugrc-palletjack>=5.0,<5.2",
-        "agrc-supervisor==3.1.0",
+        "ugrc-supervisor>=3.1.3",
     ],
     extras_require={
         "tests": [

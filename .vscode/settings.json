@@ -6,7 +6,8 @@
     "gserviceaccount",
     "nfhl",
     "palletjack",
-    "skidname"
+    "skidname",
+    "ugrc"
   ],
   "editor.formatOnSave": true,
   "editor.rulers": [120],
