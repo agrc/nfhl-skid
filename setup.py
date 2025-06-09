@@ -4,6 +4,7 @@
 setup.py
 A module that installs the nfhl-skid skid as a module
 """
+
 from glob import glob
 from os.path import basename, splitext
 
@@ -40,6 +41,7 @@ setup(
     install_requires=[
         "ugrc-palletjack>=5.0,<5.3",
         "ugrc-supervisor>=3.1.3",
+        "arcgis==2.4.0",  #: Polygon dataframes aren't writing to gdb with 2.4.1.1
     ],
     extras_require={
         "tests": [
