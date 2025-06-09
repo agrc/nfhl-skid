@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/agrc/nfhl-skid/compare/v1.0.2...v1.0.3) (2025-06-09)
+
+
+### Bug Fixes
+
+* pin arcgis to fix gdb write problem ([d4342cf](https://github.com/agrc/nfhl-skid/commit/d4342cf6b96cea4f0fcf4b15e2d5c93c039e2188))
+
 ## [1.0.2](https://github.com/agrc/nfhl-skid/compare/v1.0.1...v1.0.2) (2025-06-06)
 
 
