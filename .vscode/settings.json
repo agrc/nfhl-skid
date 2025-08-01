@@ -3,6 +3,7 @@
     "accesstoken",
     "Buildx",
     "cloudrun",
+    "cooldown",
     "gserviceaccount",
     "nfhl",
     "palletjack",
