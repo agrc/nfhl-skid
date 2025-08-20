@@ -3,6 +3,7 @@
 """
 Run the nfhl-skid script as a cloud function.
 """
+
 import json
 import logging
 import shutil
@@ -161,7 +162,7 @@ def _hazard_areas(hazard_areas_df):
 def _extract_layer(module_logger, fema_extractor, layer):
     module_logger.info("Extracting %s...", layer["name"])
     service_layer = extract.ServiceLayer(
-        f'{fema_extractor.url}/{layer["number"]}', timeout=config.TIMEOUT, where_clause="DFIRM_ID LIKE '49%'"
+        f"{fema_extractor.url}/{layer['number']}", timeout=config.TIMEOUT, where_clause=layer["where_clause"]
     )
     layer_df = fema_extractor.get_features(service_layer)
     return layer_df
@@ -265,7 +266,7 @@ def process():  # pylint: disable=too-many-locals
 
     with TemporaryDirectory() as tempdir:
         tempdir_path = Path(tempdir)
-        log_name = f'{config.LOG_FILE_NAME}_{start.strftime("%Y%m%d-%H%M%S")}.txt'
+        log_name = f"{config.LOG_FILE_NAME}_{start.strftime('%Y%m%d-%H%M%S')}.txt"
         log_path = tempdir_path / log_name
 
         skid_supervisor = _initialize(log_path, secrets.SENDGRID_API_KEY)
@@ -300,12 +301,12 @@ def process():  # pylint: disable=too-many-locals
         summary_message = MessageDetails()
         summary_message.subject = f"{config.SKID_NAME} Update Summary"
         summary_rows = [
-            f'{config.SKID_NAME} update {start.strftime("%Y-%m-%d")}',
+            f"{config.SKID_NAME} update {start.strftime('%Y-%m-%d')}",
             "=" * 20,
             "",
-            f'Start time: {start.strftime("%H:%M:%S")}',
-            f'End time: {end.strftime("%H:%M:%S")}',
-            f"Duration: {str(end-start)}",
+            f"Start time: {start.strftime('%H:%M:%S')}",
+            f"End time: {end.strftime('%H:%M:%S')}",
+            f"Duration: {str(end - start)}",
             "Update Counts:",
         ]
         summary_rows.extend([f"{name}: {count}" for name, count in feature_counts.items()])
