@@ -62,6 +62,14 @@ FEMA_LAYERS = {
         "name": "S_Wtr_Ln",
         "where_clause": DFIRM_WHERE,
     },
+    "S_LEVEE": {
+        "number": 23,
+        "itemid": "295a02bbe0694dbfb5c827e073df2f9e",
+        "name": "S_LEVEE",
+        "date_fields": ["const_date", "pal_date"],
+        "double_fields": ["freeboard"],
+        "where_clause": DFIRM_WHERE,
+    },
     "S_Fld_Haz_Ar": {
         "number": 28,
         "itemid": "b2c606f13a4c4a59b3c253647883833f",
