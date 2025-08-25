@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/agrc/nfhl-skid/compare/v1.0.3...v1.0.4) (2025-08-25)
+
+
+### Bug Fixes
+
+* trigger release for new layers ([d044318](https://github.com/agrc/nfhl-skid/commit/d044318ceafba375294f129f531c0d4d50ad012b))
+
 ## [1.0.3](https://github.com/agrc/nfhl-skid/compare/v1.0.2...v1.0.3) (2025-06-09)
 
 
