@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/agrc/nfhl-skid/compare/v1.0.4...v1.0.5) (2025-11-07)
+
+
+### Dependencies
+
+* **dev:** update functions-framework requirement ([fc927d4](https://github.com/agrc/nfhl-skid/commit/fc927d454e0388026d7277c1c4b0921a5c645a8f))
+
 ## [1.0.4](https://github.com/agrc/nfhl-skid/compare/v1.0.3...v1.0.4) (2025-08-25)
 
 
