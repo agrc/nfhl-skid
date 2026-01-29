@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.6](https://github.com/agrc/nfhl-skid/compare/v1.0.5...v1.0.6) (2026-01-29)
+
+
+### Dependencies
+
+* **dev:** update functions-framework requirement ([02beaf4](https://github.com/agrc/nfhl-skid/commit/02beaf46464a1ddf8b86c31f2ab7d73e6e62216c))
+* **dev:** update pytest requirement from &lt;9,&gt;=6 to &gt;=6,&lt;10 ([85589bc](https://github.com/agrc/nfhl-skid/commit/85589bce0827e24720c5ba5cd389a01451815bcc))
+
 ## [1.0.5](https://github.com/agrc/nfhl-skid/compare/v1.0.4...v1.0.5) (2025-11-07)
 
 
