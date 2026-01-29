@@ -23,3 +23,7 @@ You must have already created a GCP project for the skid to run in, preferably v
 nfhl-skid uses GCP Secrets Manager to make secrets available to the function. They are mounted as a local file specified in the GitHub CI action workflow. For local development, the `secrets.json` file holds all the login info, etc. A template is available in the repo's root directory. It attempts to read the mounted secrets file first, and failing this will try to read a local secrets.json.
 
 A separate `config.py` module holds non-secret configuration values. These are accessed by importing the module and accessing them directly. This is where you specify the layers to download and the AGOL item IDs to update. Because these values are not senstitive, they are stored in the repo itself and get installed in the container via the build process.
+
+## Attribution
+
+This project was developed with the assistance of [GitHub Copilot](https://github.com/features/copilot).
