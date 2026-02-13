@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/agrc/nfhl-skid/compare/v1.0.6...v1.0.7) (2026-02-13)
+
+
+### Dependencies
+
+* update ugrc-palletjack requirement from &lt;5.3,&gt;=5.0 to &gt;=5.0,&lt;6.1 ([716d48a](https://github.com/agrc/nfhl-skid/commit/716d48a1c443ad9f90520506708dc15e54789ec8))
+
 ## [1.0.6](https://github.com/agrc/nfhl-skid/compare/v1.0.5...v1.0.6) (2026-01-29)
 
 
