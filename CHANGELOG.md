@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8](https://github.com/agrc/nfhl-skid/compare/v1.0.7...v1.0.8) (2026-02-18)
+
+
+### Bug Fixes
+
+* empty commit to trigger release ([fd61441](https://github.com/agrc/nfhl-skid/commit/fd6144107205044fbf4637ce9d2391721dea89eb))
+* empty commit to trigger release for palletjack fix of np inf checks ([79e1103](https://github.com/agrc/nfhl-skid/commit/79e110306ee1831f0bc3aaad2e0d5ccd7feb2948))
+
 ## [1.0.7](https://github.com/agrc/nfhl-skid/compare/v1.0.6...v1.0.7) (2026-02-13)
 
 
