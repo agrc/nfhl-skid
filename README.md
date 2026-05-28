@@ -18,6 +18,19 @@ nfhl-skid is designed to run in Google Cloud Run but can also be run locally for
 
 You must have already created a GCP project for the skid to run in, preferably via terraform. This should include service accounts for github actions to deploy the container, Cloud Run to actually run the container, and Cloud Scheduler to kick off the run. It should also include Artifact Registry to store the container builds, Secrets Manager to handle sensitive info, and Log Monitoring for alerts.
 
+## Running Locally
+
+You'll run the skid in a conda environment using the Python Command Prompt installed with ArcGIS Pro.
+
+The first step is to clone the repo to a local folder. Then, within `src/nfhl/secrets`, copy `secrets_template.json` to `secrets.json` and fill in the AGOL username and password for an account that has access to the items listed in `FEMA_LAEYRS` in `config.py`. The Sendgrid API key is used to send the automated emails at completion (or if it errors out). If you don't have an API key, you can probably just enter gibberish here and it will make it error out on the email portion but the data update should have happened by that point.
+
+1. Create a new conda env: `conda create -n nfhl`
+1. Activate the new env: `activate nfhl`
+1. Install default version of python 3.11 (current arcgis dependency pin requires 3.11): `conda install python -c defaults`
+1. Navigate to your local clone of the repo: `cd c:\path\to\repo`
+1. Install the skid and all its dependencies: `pip install -e .`
+1. Run the skid with `nfhl-skid`
+
 ## Handling Secrets and Configuration Files
 
 nfhl-skid uses GCP Secrets Manager to make secrets available to the function. They are mounted as a local file specified in the GitHub CI action workflow. For local development, the `secrets.json` file holds all the login info, etc. A template is available in the repo's root directory. It attempts to read the mounted secrets file first, and failing this will try to read a local secrets.json.
