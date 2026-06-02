@@ -41,7 +41,7 @@ setup(
     install_requires=[
         "ugrc-palletjack>=5.0,<6.1",
         "ugrc-supervisor>=3.1.3",
-        "arcgis==2.4.0",  #: Polygon dataframes aren't writing to gdb with 2.4.1.1
+        "arcgis==2.4.3",  #: Polygon dataframes aren't writing to gdb with 2.4.1.1
     ],
     extras_require={
         "tests": [
