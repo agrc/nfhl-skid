@@ -297,9 +297,13 @@ def process():  # pylint: disable=too-many-locals
             hazard_area_result = False
 
         end = datetime.now()
+        error_count = sum(count == "error" for count in feature_counts.values()) + int(not hazard_area_result)
 
         summary_message = MessageDetails()
         summary_message.subject = f"{config.SKID_NAME} Update Summary"
+        if error_count:
+            label = "error" if error_count == 1 else "errors"
+            summary_message.subject = f"{summary_message.subject} ({error_count} {label})"
         summary_rows = [
             f"{config.SKID_NAME} update {start.strftime('%Y-%m-%d')}",
             "=" * 20,
@@ -307,6 +311,7 @@ def process():  # pylint: disable=too-many-locals
             f"Start time: {start.strftime('%H:%M:%S')}",
             f"End time: {end.strftime('%H:%M:%S')}",
             f"Duration: {str(end - start)}",
+            f"Errors: {error_count}",
             "Update Counts:",
         ]
         summary_rows.extend([f"{name}: {count}" for name, count in feature_counts.items()])

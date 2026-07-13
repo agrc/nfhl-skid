@@ -22,7 +22,7 @@ def test_get_secrets_from_local_location(mocker):
 
 
 def test_process_continues_on_one_layer_failure(mocker, caplog):
-    mocker.patch.multiple(
+    patched = mocker.patch.multiple(
         "nfhl.main",
         _get_secrets=mocker.DEFAULT,
         _initialize=mocker.DEFAULT,
@@ -44,10 +44,13 @@ def test_process_continues_on_one_layer_failure(mocker, caplog):
     assert "Error loading one" in caplog.text
     assert extract_mock.call_count == 5
     assert extract_mock.call_args_list[4].args[2] == {"name": "two"}
+    summary_message = patched["_initialize"].return_value.notify.call_args.args[0]
+    assert summary_message.subject == "foo Update Summary (1 error)"
+    assert "Errors: 1" in summary_message.message
 
 
 def test_process_continues_on_failed_area_hazard_symbology_update(mocker, caplog):
-    mocker.patch.multiple(
+    patched = mocker.patch.multiple(
         "nfhl.main",
         _get_secrets=mocker.DEFAULT,
         _initialize=mocker.DEFAULT,
@@ -68,3 +71,6 @@ def test_process_continues_on_failed_area_hazard_symbology_update(mocker, caplog
 
     assert "symbology update failed" in caplog.text
     assert "Error updating hazard area symbology" in caplog.text
+    summary_message = patched["_initialize"].return_value.notify.call_args.args[0]
+    assert summary_message.subject == "foo Update Summary (1 error)"
+    assert "Errors: 1" in summary_message.message
