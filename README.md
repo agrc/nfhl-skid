@@ -24,9 +24,8 @@ You'll run the skid in a conda environment using the Python Command Prompt insta
 
 The first step is to clone the repo to a local folder. Then, within `src/nfhl/secrets`, copy `secrets_template.json` to `secrets.json` and fill in the AGOL username and password for an account that has access to the items listed in `FEMA_LAEYRS` in `config.py`. The Sendgrid API key is used to send the automated emails at completion (or if it errors out). If you don't have an API key, you can probably just enter gibberish here and it will make it error out on the email portion but the data update should have happened by that point.
 
-1. Create a new conda env: `conda create -n nfhl`
+1. Create a new conda env: `conda create -n nfhl python=3.13`
 1. Activate the new env: `activate nfhl`
-1. Install default version of python 3.11 (current arcgis dependency pin requires 3.11): `conda install python -c defaults`
 1. Navigate to your local clone of the repo: `cd c:\path\to\repo`
 1. Install the skid and all its dependencies: `pip install -e .`
 1. Run the skid with `nfhl-skid`
