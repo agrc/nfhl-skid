@@ -27,7 +27,7 @@ The first step is to clone the repo to a local folder. Then, within `src/nfhl/se
 1. Create a new conda env: `conda create -n nfhl python=3.13`
 1. Activate the new env: `activate nfhl`
 1. Navigate to your local clone of the repo: `cd c:\path\to\repo`
-1. Install the skid and all its dependencies: `pip install -e .`
+1. Install the skid and all its dependencies: `pip install -e ".[tests]"`
 1. Run the skid with `nfhl-skid`
 
 ## Handling Secrets and Configuration Files
