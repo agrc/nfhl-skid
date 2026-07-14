@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.9](https://github.com/agrc/nfhl-skid/compare/v1.0.8...v1.0.9) (2026-07-14)
+
+
+### Features
+
+* add error count to email subject line ([142d8b5](https://github.com/agrc/nfhl-skid/commit/142d8b5246131ea60d1c663b8d853ceac652b180)), closes [#67](https://github.com/agrc/nfhl-skid/issues/67)
+
+
+### Bug Fixes
+
+* fix hostname when running on GCP ([ddb3e62](https://github.com/agrc/nfhl-skid/commit/ddb3e621dedeb84c6807011b29306da3949fa19f))
+* remove pinned arcgis package ([a218536](https://github.com/agrc/nfhl-skid/commit/a218536f3c8869fac1416446e0ea48c3830cbc1e)), closes [#62](https://github.com/agrc/nfhl-skid/issues/62)
+
+
+### Dependencies
+
+* bump to python 3.13 ([19d4968](https://github.com/agrc/nfhl-skid/commit/19d4968f0c9bdf9ed9f72dad1c9b13753096dd8d))
+
+
+### Documentation
+
+* update readme for local runs ([075d274](https://github.com/agrc/nfhl-skid/commit/075d274ba4cb66ebc49bed1a2bda391e2e3c8451))
+
 ## [1.0.8](https://github.com/agrc/nfhl-skid/compare/v1.0.7...v1.0.8) (2026-02-18)
 
 
