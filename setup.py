@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
 """
 setup.py
 A module that installs the nfhl-skid skid as a module
@@ -13,7 +11,7 @@ from setuptools import find_packages, setup
 #: Load version from source file
 version = {}
 with open("src/nfhl/version.py") as fp:
-    exec(fp.read(), version)
+    exec(fp.read(), version)  # noqa: S102
 
 setup(
     name="nfhl-skid",

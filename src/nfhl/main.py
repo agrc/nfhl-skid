@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# * coding: utf8 *
 """
 Run the nfhl-skid script as a cloud function.
 """
@@ -116,8 +114,8 @@ def _remove_log_file_handlers(log_name, loggers):
                 if log_name in handler.stream.name:
                     logger.removeHandler(handler)
                     handler.close()
-            except Exception:
-                pass
+            except (AttributeError, OSError, ValueError):
+                continue
 
 
 def _hazard_areas(hazard_areas_df):
@@ -260,7 +258,7 @@ def process():  # pylint: disable=too-many-locals
     """The main function that does all the work."""
 
     #: Set up secrets, tempdir, supervisor, and logging
-    start = datetime.now()
+    start = datetime.now().astimezone()
 
     secrets = SimpleNamespace(**_get_secrets())
 
@@ -296,7 +294,7 @@ def process():  # pylint: disable=too-many-locals
             module_logger.exception("Error updating hazard area symbology")
             hazard_area_result = False
 
-        end = datetime.now()
+        end = datetime.now().astimezone()
         error_count = sum(count == "error" for count in feature_counts.values()) + int(not hazard_area_result)
 
         summary_message = MessageDetails()
@@ -310,7 +308,7 @@ def process():  # pylint: disable=too-many-locals
             "",
             f"Start time: {start.strftime('%H:%M:%S')}",
             f"End time: {end.strftime('%H:%M:%S')}",
-            f"Duration: {str(end - start)}",
+            f"Duration: {end - start}",
             f"Errors: {error_count}",
             "Update Counts:",
         ]
