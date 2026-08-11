@@ -19,7 +19,7 @@ try:
         if not project_id:
             raise ValueError
         HOST_NAME = project_id
-except Exception:
+except (OSError, ValueError, urllib.error.URLError):
     HOST_NAME = socket.gethostname()
 
 SENDGRID_SETTINGS = {  #: Settings for SendGridHandler
