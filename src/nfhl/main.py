@@ -24,6 +24,9 @@ except ImportError:
     import config
     import version
 
+utils.RETRY_MAX_TRIES = config.RETRY_MAX_TRIES
+utils.RETRY_DELAY_TIME = config.RETRY_DELAY_TIME
+
 
 def _get_secrets():
     """A helper method for loading secrets from either a GCF mount point or the local src/nfhl-skid/secrets/secrets.
