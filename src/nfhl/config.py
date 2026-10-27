@@ -31,7 +31,7 @@ LOG_LEVEL = logging.INFO
 LOG_FILE_NAME = "log"
 
 RETRY_MAX_TRIES = 5  # palletjack default = 3; includes retries after the initial attempt
-RETRY_DELAY_TIME = 4  # palletjack default = 2; used as the retry delay exponent
+RETRY_DELAY_TIME = 2  # palletjack default = 2; used as the retry delay exponent
 
 TIMEOUT = 20
 SERVICE_URL = "https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer"
