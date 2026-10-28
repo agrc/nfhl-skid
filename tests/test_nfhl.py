@@ -37,13 +37,14 @@ def test_process_continues_on_one_layer_failure(mocker, caplog):
     mocker.patch("palletjack.utils.sleep")
 
     extract_mock = mocker.patch("nfhl.main._extract_layer")
-    extract_mock.side_effect = [Exception("one_1"), Exception("one_2"), Exception("one_3"), Exception("one_4"), 42]
+    retry_max_tries = main.utils.RETRY_MAX_TRIES
+    extract_mock.side_effect = [Exception(f"one_{attempt}") for attempt in range(retry_max_tries + 1)] + [42]
 
     main.process()
 
     assert "Error loading one" in caplog.text
-    assert extract_mock.call_count == 5
-    assert extract_mock.call_args_list[4].args[2] == {"name": "two"}
+    assert extract_mock.call_count == retry_max_tries + 2
+    assert extract_mock.call_args_list[retry_max_tries + 1].args[2] == {"name": "two"}
     summary_message = patched["_initialize"].return_value.notify.call_args.args[0]
     assert summary_message.subject == "foo Update Summary (1 error)"
     assert "Errors: 1" in summary_message.message
