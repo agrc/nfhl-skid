@@ -269,8 +269,90 @@
                         "angleAlignment": "Map"
                     }
                 },
-                "value": "Area with Reduced Flood Risk due to Levee",
-                "label": "Area with Reduced Flood Risk due to Levee"
+                "value": "Area with Reduced Risk Due to Levee",
+                "label": "Area with Reduced Risk Due to Levee"
+            },
+            {
+                "symbol": {
+                    "type": "CIMSymbolReference",
+                    "symbol": {
+                        "type": "CIMPolygonSymbol",
+                        "symbolLayers": [
+                            {
+                                "type": "CIMSolidStroke",
+                                "enable": true,
+                                "capStyle": "Round",
+                                "joinStyle": "Round",
+                                "lineStyle3D": "Strip",
+                                "miterLimit": 10,
+                                "width": 1,
+                                "color": [
+                                    255,
+                                    255,
+                                    255,
+                                    100
+                                ]
+                            },
+                            {
+                                "type": "CIMHatchFill",
+                                "enable": true,
+                                "lineSymbol": {
+                                    "type": "CIMLineSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidStroke",
+                                            "enable": true,
+                                            "capStyle": "Round",
+                                            "joinStyle": "Round",
+                                            "lineStyle3D": "Strip",
+                                            "miterLimit": 4,
+                                            "width": 5,
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                77
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "offsetX": 5,
+                                "rotation": 45,
+                                "separation": 10,
+                                "offsetY": 5
+                            },
+                            {
+                                "type": "CIMHatchFill",
+                                "enable": true,
+                                "lineSymbol": {
+                                    "type": "CIMLineSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidStroke",
+                                            "enable": true,
+                                            "capStyle": "Round",
+                                            "joinStyle": "Round",
+                                            "lineStyle3D": "Strip",
+                                            "miterLimit": 4,
+                                            "width": 5,
+                                            "color": [
+                                                242,
+                                                230,
+                                                115,
+                                                77
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "rotation": 45,
+                                "separation": 10
+                            }
+                        ],
+                        "angleAlignment": "Map"
+                    }
+                },
+                "value": "Area with Risk Due to Levee",
+                "label": "Area with Risk Due to Levee"
             },
             {
                 "symbol": {
@@ -353,6 +435,116 @@
                 },
                 "value": "Regulatory Floodway",
                 "label": "Regulatory Floodway"
+            },
+            {
+                "symbol": {
+                    "type": "CIMSymbolReference",
+                    "symbol": {
+                        "type": "CIMPolygonSymbol",
+                        "symbolLayers": [
+                            {
+                                "type": "CIMSolidStroke",
+                                "enable": true,
+                                "capStyle": "Round",
+                                "joinStyle": "Round",
+                                "lineStyle3D": "Strip",
+                                "miterLimit": 10,
+                                "width": 1,
+                                "color": [
+                                    255,
+                                    255,
+                                    255,
+                                    100
+                                ]
+                            },
+                            {
+                                "type": "CIMHatchFill",
+                                "enable": true,
+                                "lineSymbol": {
+                                    "type": "CIMLineSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidStroke",
+                                            "enable": true,
+                                            "capStyle": "Round",
+                                            "joinStyle": "Round",
+                                            "lineStyle3D": "Strip",
+                                            "miterLimit": 4,
+                                            "width": 5,
+                                            "color": [
+                                                255,
+                                                0,
+                                                0,
+                                                77
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "offsetX": 10,
+                                "rotation": 45,
+                                "separation": 15,
+                                "offsetY": 10
+                            },
+                            {
+                                "type": "CIMHatchFill",
+                                "enable": true,
+                                "lineSymbol": {
+                                    "type": "CIMLineSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidStroke",
+                                            "enable": true,
+                                            "capStyle": "Round",
+                                            "joinStyle": "Round",
+                                            "lineStyle3D": "Strip",
+                                            "miterLimit": 4,
+                                            "width": 5,
+                                            "color": [
+                                                255,
+                                                0,
+                                                0,
+                                                77
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "offsetX": 5,
+                                "rotation": -45,
+                                "separation": 15,
+                                "offsetY": 5
+                            },
+                            {
+                                "type": "CIMHatchFill",
+                                "enable": true,
+                                "lineSymbol": {
+                                    "type": "CIMLineSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidStroke",
+                                            "enable": true,
+                                            "capStyle": "Round",
+                                            "joinStyle": "Round",
+                                            "lineStyle3D": "Strip",
+                                            "miterLimit": 4,
+                                            "width": 5,
+                                            "color": [
+                                                0,
+                                                230,
+                                                255,
+                                                77
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "rotation": 45,
+                                "separation": 15
+                            }
+                        ],
+                        "angleAlignment": "Map"
+                    }
+                },
+                "value": "Special Floodway",
+                "label": "Special Floodway"
             }
         ],
         "fieldDelimiter": ",",

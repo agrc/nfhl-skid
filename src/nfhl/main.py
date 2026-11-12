@@ -20,9 +20,11 @@ from supervisor.models import MessageDetails, Supervisor
 #: the relative imports fail because of how it's calling the function.
 try:
     from . import config, version
+    from .fld_haz_ar_label_crosswalk import FLD_HAZ_AR_LABEL_CROSSWALK
 except ImportError:
     import config
     import version
+    from fld_haz_ar_label_crosswalk import FLD_HAZ_AR_LABEL_CROSSWALK
 
 utils.RETRY_MAX_TRIES = config.RETRY_MAX_TRIES
 utils.RETRY_DELAY_TIME = config.RETRY_DELAY_TIME
@@ -122,35 +124,11 @@ def _remove_log_file_handlers(log_name, loggers):
 
 
 def _hazard_areas(hazard_areas_df):
-    #: Calculate label values for symbology
-    one_per_annual_flood_dq = (hazard_areas_df["FLD_ZONE"].isin(["A", "AE", "AH", "AO", "VE"])) & (
-        hazard_areas_df["ZONE_SUBTY"].isnull()
-    )
-    regulatory_floodway_dq = (hazard_areas_df["FLD_ZONE"] == "AE") & (
-        hazard_areas_df["ZONE_SUBTY"].isin(["FLOODWAY", "FLOODWAY CONTAINED IN CHANNEL"])
-    )
-    undet_flood_hazard_dq = hazard_areas_df["FLD_ZONE"] == "D"
-    point_oh_two_percent_annual_flood_dq = (hazard_areas_df["FLD_ZONE"] == "X") & (
-        hazard_areas_df["ZONE_SUBTY"].isin(
-            [
-                "0.2 PCT ANNUAL CHANCE FLOOD HAZARD",
-                "1 PCT DEPTH LESS THAN 1 FOOT",
-                "1 PCT DRAINAGE AREA LESS THAN 1 SQUARE MILE",
-            ]
-        )
-    )
-    reduced_risk_levee_dq = (hazard_areas_df["FLD_ZONE"] == "X") & (
-        hazard_areas_df["ZONE_SUBTY"] == "AREA WITH REDUCED FLOOD RISK DUE TO LEVEE"
-    )
-    area_not_included_dq = hazard_areas_df["FLD_ZONE"] == "AREA NOT INCLUDED"
-
-    hazard_areas_df["label"] = ""
-    hazard_areas_df.loc[one_per_annual_flood_dq, "label"] = "1% Annual Chance Flood Hazard"
-    hazard_areas_df.loc[regulatory_floodway_dq, "label"] = "Regulatory Floodway"
-    hazard_areas_df.loc[undet_flood_hazard_dq, "label"] = "Area of Undetermined Flood Hazard"
-    hazard_areas_df.loc[point_oh_two_percent_annual_flood_dq, "label"] = "0.2% Annual Chance Flood Hazard"
-    hazard_areas_df.loc[reduced_risk_levee_dq, "label"] = "Area with Reduced Flood Risk due to Levee"
-    hazard_areas_df.loc[area_not_included_dq, "label"] = "Area Not Included"
+    zone_subtypes = hazard_areas_df["ZONE_SUBTY"].astype(object).where(hazard_areas_df["ZONE_SUBTY"].notna(), None)
+    hazard_areas_df["label"] = [
+        FLD_HAZ_AR_LABEL_CROSSWALK.get((flood_zone, subtype), "")
+        for flood_zone, subtype in zip(hazard_areas_df["FLD_ZONE"], zone_subtypes)
+    ]
 
     #: fill null strings with empty string '' to fix featureset error
     for col in hazard_areas_df.columns:
