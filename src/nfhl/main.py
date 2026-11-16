@@ -126,7 +126,9 @@ def _remove_log_file_handlers(log_name, loggers):
 def _hazard_areas(hazard_areas_df):
     zone_subtypes = hazard_areas_df["ZONE_SUBTY"].astype(object).where(hazard_areas_df["ZONE_SUBTY"].notna(), None)
     hazard_areas_df["label"] = [
-        FLD_HAZ_AR_LABEL_CROSSWALK.get((flood_zone, subtype), "")
+        "Area Not Included"
+        if flood_zone == "AREA NOT INCLUDED"
+        else FLD_HAZ_AR_LABEL_CROSSWALK.get((flood_zone, subtype), "")
         for flood_zone, subtype in zip(hazard_areas_df["FLD_ZONE"], zone_subtypes)
     ]
 
