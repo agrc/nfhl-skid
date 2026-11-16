@@ -33,6 +33,7 @@ FLD_HAZ_AR_LABEL_CROSSWALK = {
     ("AE", "AREA OF SPECIAL CONSIDERATION"): "Special Floodway",
     ("AE", "AREA WITH FLOOD HAZARD DUE TO LEVEE SYSTEM"): "1% Annual Chance Flood Hazard",
     ("AE", "AREA WITH FLOOD HAZARD DUE TO NON_ACCREDITED LEVEE SYSTEM"): "1% Annual Chance Flood Hazard",
+    ("AE", "AREA WITH FLOOD HAZARD DUE TO NON-ACCREDITED LEVEE SYSTEM"): "1% Annual Chance Flood Hazard",
     ("AE", "AREA WITH UNDETERMINED FLOOD HAZARD DUE TO NON-ACCREDITED LEVEE SYSTEM"): "1% Annual Chance Flood Hazard",
     ("AE", "COASTAL FLOODPLAIN"): "1% Annual Chance Flood Hazard",
     ("AE", "COLORADO RIVER"): "Special Floodway",
