@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.10](https://github.com/agrc/nfhl-skid/compare/v1.0.9...v1.0.10) (2026-11-17)
+
+
+### Bug Fixes
+
+* add hazard area label crosswalk and update label field logic ([8775d9f](https://github.com/agrc/nfhl-skid/commit/8775d9fce6ac1dc7382833976b7de3fda0d05f0e))
+* Set retry delay to palletjack default ([065cd3c](https://github.com/agrc/nfhl-skid/commit/065cd3cde56fe51bdbf8d7704da3b22da20b853a))
+
 ## [1.0.9](https://github.com/agrc/nfhl-skid/compare/v1.0.8...v1.0.9) (2026-07-14)
 
 
